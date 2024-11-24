@@ -11,6 +11,7 @@ import Footer from "./components/Footer";
 import ComoFunciona from "./components/ComoFunciona";
 import CrearGrupo from "./components/CrearGrupo";
 import GrupoCreado from "./components/GrupoCreado";
+import MiCuenta from "./components/MiCuenta";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
                 }
               />
               <Route path="/crear-grupo" element={<CrearGrupo />} />
+              <Route path="/mi-cuenta" element={<MiCuenta />} />
             </Routes>
           </div>
           <Footer />

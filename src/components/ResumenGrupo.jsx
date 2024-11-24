@@ -2,12 +2,14 @@ import { useState } from "react";
 import { db } from "../firebase"; // Asegúrate de importar tu configuración de Firebase
 import { collection, addDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
+import { useAuth } from "../contexts/AuthContext"; // Importa el contexto de autenticación
 
 function ResumenGrupo({ formData, onPrevious }) {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [invitationLink, setInvitationLink] = useState("");
   const navigate = useNavigate(); // Inicializa useNavigate
+  const { currentUser } = useAuth(); // Obtén el usuario actual
 
   const handleCreateGroup = async () => {
     setLoading(true);
@@ -19,6 +21,7 @@ function ResumenGrupo({ formData, onPrevious }) {
         observaciones: formData.observaciones,
         fases: formData.fases,
         equipos: formData.equipos,
+        miembros: [currentUser.email], // Agrega tu correo electrónico aquí
       });
       console.log("Grupo creado con ID: ", docRef.id);
 
@@ -29,10 +32,10 @@ function ResumenGrupo({ formData, onPrevious }) {
         `Felicidades, has creado tu Grupo Futbolero ${formData.nombre} con éxito.`
       );
 
-      // Simular un retraso antes de redirigir
+      // Redirigir a GrupoCreado
       setTimeout(() => {
         setLoading(false);
-        navigate("/mi-cuenta"); // Redirige a "Mi Cuenta"
+        navigate("/grupo-creado", { state: { formData, invitationLink } });
       }, 2000);
     } catch (e) {
       console.error("Error al crear el grupo: ", e);
@@ -44,6 +47,7 @@ function ResumenGrupo({ formData, onPrevious }) {
     <div className="bg-white rounded-lg shadow-lg p-8">
       {loading ? (
         <div className="flex justify-center items-center">
+          <p>Creando el grupo...</p>
           <div className="loader"></div>
         </div>
       ) : (

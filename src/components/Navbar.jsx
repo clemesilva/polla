@@ -5,7 +5,7 @@ function Navbar() {
   const { currentUser, logout } = useAuth();
 
   return (
-    <nav className="bg-neutral-800 text-white shadow-lg">
+    <nav className="bg-gradient-to-r from-amber-800 via-amber-700 to-amber-800 text-white shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="text-xl font-bold text-green-100">
@@ -24,7 +24,6 @@ function Navbar() {
             >
               Reglas
             </Link>
-
             <Link
               to="/predictions"
               className="hover:bg-neutral-700 px-3 py-2 rounded transition"
@@ -37,11 +36,16 @@ function Navbar() {
             >
               Crear Grupo
             </Link>
+            <Link
+              to="/partidos"
+              className="hover:bg-neutral-700 px-3 py-2 rounded transition"
+            >
+              Partidos
+            </Link>
           </div>
           <div className="flex space-x-4">
             {currentUser ? (
               <>
-                {" "}
                 <Link
                   to="/mi-cuenta"
                   className="bg-green-700 text-white hover:bg-green-600 px-3 py-2 rounded transition duration-200"

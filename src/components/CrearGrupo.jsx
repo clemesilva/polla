@@ -1,4 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { db } from "../firebase"; // Asegúrate de importar tu configuración de Firebase
+import { collection, addDoc, setDoc, doc } from "firebase/firestore";
 import { useAuth } from "../contexts/AuthContext";
 import FasesTorneo from "./FasesTorneo";
 import SeleccionEquipos from "./SeleccionEquipos";
@@ -15,6 +17,7 @@ function CrearGrupo() {
     observaciones: "",
     fases: [],
     equipos: [],
+    predicciones: {},
   });
   const [invitationLink, setInvitationLink] = useState("");
 
@@ -43,11 +46,28 @@ function CrearGrupo() {
   };
 
   const handleCreateGroup = async () => {
-    const generatedLink = `https://tinyurl.com/${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
-    setInvitationLink(generatedLink);
-    setPaso(5);
+    try {
+      // Crear el grupo en la colección "grupos"
+      const docRef = await addDoc(collection(db, "grupos"), {
+        torneo: formData.torneo,
+        nombre: formData.nombre,
+        descripcion: formData.descripcion,
+        observaciones: formData.observaciones,
+        fases: formData.fases,
+        equipos: formData.equipos,
+        miembros: [currentUser.email], // Agregar el creador como miembro
+      });
+
+      // Crear el documento en la colección "users_groups"
+      await setDoc(doc(db, "users_groups", docRef.id), {
+        groupID: formData.nombre, // Nombre del grupo
+        miembros: [currentUser.uid], // Agregar el creador como miembro
+      });
+
+      alert("Grupo creado con éxito!");
+    } catch (error) {
+      console.error("Error al crear el grupo: ", error);
+    }
   };
 
   return (

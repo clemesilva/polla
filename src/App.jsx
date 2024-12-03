@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import Predictions from "./components/Predictions";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import Reglas from "./components/Reglas";
 import Footer from "./components/Footer";
@@ -12,6 +12,9 @@ import ComoFunciona from "./components/ComoFunciona";
 import CrearGrupo from "./components/CrearGrupo";
 import GrupoCreado from "./components/GrupoCreado";
 import MiCuenta from "./components/MiCuenta";
+import { JoinGroup } from "./components/JoinGroup";
+import FootballData from "./components/FootballData";
+import Partidos from "./components/Partidos";
 
 function App() {
   return (
@@ -29,15 +32,27 @@ function App() {
               <Route path="/comofunciona" element={<ComoFunciona />} />
               <Route path="/grupo-creado" element={<GrupoCreado />} />
               <Route
-                path="/predictions"
+                path="/partidos"
                 element={
                   <ProtectedRoute>
-                    <Predictions />
+                    {" "}
+                    <Partidos />{" "}
                   </ProtectedRoute>
                 }
               />
-              <Route path="/crear-grupo" element={<CrearGrupo />} />
+
+              <Route
+                path="/crear-grupo"
+                element={
+                  <ProtectedRoute>
+                    <CrearGrupo />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/football-data" element={<FootballData />} />
+
               <Route path="/mi-cuenta" element={<MiCuenta />} />
+              <Route path="/join-group" element={<JoinGroup />} />
             </Routes>
           </div>
           <Footer />

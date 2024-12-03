@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 function Footer() {
   return (
-    <footer className="bg-gradient-to-r from-green-800 to-green-900 text-white mt-auto">
+    <footer className="bg-gradient-to-r from-neutral-600 to-neutral-900 text-white mt-auto">
       <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Columna 1 - Logo y descripción */}

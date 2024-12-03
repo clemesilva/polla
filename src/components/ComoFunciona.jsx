@@ -6,12 +6,12 @@ function ComoFunciona() {
       {/* Contenido principal */}
       <div className="container mx-auto px-4 py-8 bg-[#f5e1ce]">
         <h1 className="text-4xl font-bold text-[#64c27b] mb-8">
-          ¿Cómo funciona TocaTuPolla?
+          ¿Cómo funciona TocaLaPolla?
         </h1>
 
         <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
           <p className="text-lg text-[#5D4037] font-semibold">
-            TocaTuPolla NO se hace responsable de la entrega de algún premio una
+            TocaLaPolla NO se hace responsable de la entrega de algún premio una
             vez finalizado el juego. Nuestro sitio es una PLATAFORMA
             estrictamente para ENTRETENIMIENTO.
           </p>
@@ -75,7 +75,7 @@ function ComoFunciona() {
             </div>
             <div className="text-lg text-[#5D4037] ml-14 space-y-2">
               <p>
-                TocaTuPolla funciona por acumulación de puntos. Los resultados
+                TocaLaPolla funciona por acumulación de puntos. Los resultados
                 son solo para los 90 minutos reglamentarios.
               </p>
               <p>

@@ -2,14 +2,14 @@ import { useState } from "react";
 import { db } from "../firebase"; // Asegúrate de importar tu configuración de Firebase
 import { collection, addDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
-import { useAuth } from "../contexts/AuthContext"; // Importa el contexto de autenticación
+import { useAuth } from "../contexts/AuthContext";
 
 function ResumenGrupo({ formData, onPrevious }) {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [invitationLink, setInvitationLink] = useState("");
   const navigate = useNavigate(); // Inicializa useNavigate
-  const { currentUser } = useAuth(); // Obtén el usuario actual
+  const { currentUser } = useAuth();
 
   const handleCreateGroup = async () => {
     setLoading(true);
@@ -21,13 +21,13 @@ function ResumenGrupo({ formData, onPrevious }) {
         observaciones: formData.observaciones,
         fases: formData.fases,
         equipos: formData.equipos,
-        miembros: [currentUser.email], // Agrega tu correo electrónico aquí
+        miembros: [currentUser.email],
       });
       console.log("Grupo creado con ID: ", docRef.id);
 
       // Generar el enlace de invitación
-      const generatedLink = `https://tinyurl.com/${docRef.id}`;
-      setInvitationLink(generatedLink);
+      const inviteUrl = `https://tu-sitio.com/group/invite/${docRef.id}`;
+      setInvitationLink(inviteUrl);
       setSuccessMessage(
         `Felicidades, has creado tu Grupo Futbolero ${formData.nombre} con éxito.`
       );
@@ -35,7 +35,12 @@ function ResumenGrupo({ formData, onPrevious }) {
       // Redirigir a GrupoCreado
       setTimeout(() => {
         setLoading(false);
-        navigate("/grupo-creado", { state: { formData, invitationLink } });
+        navigate("/grupo-creado", {
+          state: {
+            formData: { ...formData, id: docRef.id },
+            invitationLink: inviteUrl,
+          },
+        });
       }, 2000);
     } catch (e) {
       console.error("Error al crear el grupo: ", e);

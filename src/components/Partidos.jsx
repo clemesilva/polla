@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Papa from "papaparse";
-import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useAuth } from "../contexts/AuthContext";
 
 function Partidos() {
@@ -56,6 +57,64 @@ function Partidos() {
     fetchUserPredictions();
   }, [currentUser]);
 
+  const savePrediction = async (matchId, homeScore, awayScore, matchDate) => {
+    if (!currentUser) {
+      alert("Debes iniciar sesión para guardar predicciones");
+      return;
+    }
+
+    try {
+      const userPredictionsRef = doc(db, "usersPredictions", currentUser.uid);
+      await setDoc(
+        userPredictionsRef,
+        {
+          predictions: {
+            [matchId]: {
+              homeScore: parseInt(homeScore),
+              awayScore: parseInt(awayScore),
+              matchDate,
+            },
+          },
+        },
+        { merge: true }
+      );
+      console.log("Predicción guardada con éxito");
+    } catch (error) {
+      console.error("Error al guardar la predicción:", error);
+      alert("Error al guardar la predicción");
+    }
+  };
+
+  const handleSavePrediction = (matchId, matchDate) => {
+    const homeScore = predictions[matchId]?.homeScore ?? "";
+    const awayScore = predictions[matchId]?.awayScore ?? "";
+
+    const now = new Date();
+    const matchTime = new Date(matchDate);
+    const timeDiff = (matchTime - now) / (1000 * 60); // Diferencia en minutos
+
+    if (matchTime < now) {
+      alert("No puedes hacer predicciones para partidos que ya han pasado.");
+      return;
+    }
+
+    if (timeDiff < 10) {
+      alert(
+        "No puedes hacer predicciones para partidos que comienzan en menos de 10 minutos."
+      );
+      return;
+    }
+
+    savePrediction(matchId, homeScore, awayScore, matchDate);
+  };
+
+  const handlePredictionChange = (matchId, homeScore, awayScore) => {
+    setPredictions((prev) => ({
+      ...prev,
+      [matchId]: { homeScore, awayScore },
+    }));
+  };
+
   const getMatchStatus = (matchDate) => {
     const now = new Date();
     if (matchDate < now) {
@@ -88,37 +147,17 @@ function Partidos() {
                 <span className="text-gray-600 font-medium text-lg">
                   {partido.Local} vs {partido.visita}
                 </span>
-                <div className="flex items-center">
-                  <span className="text-gray-500 mr-2">
-                    {partido.fechaCompleta.toLocaleDateString()}{" "}
-                    {partido.fechaCompleta.toLocaleTimeString("es-ES", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: false,
-                    })}
-                  </span>
-                  <div className="flex items-center">
-                    {matchStatus === "En Vivo" && (
-                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                        En Vivo
-                      </span>
-                    )}
-                    {matchStatus === "Por Jugar" && (
-                      <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
-                        Por Jugar
-                      </span>
-                    )}
-                    {matchStatus === "Finalizado" && (
-                      <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
-                        Finalizado
-                      </span>
-                    )}
-                  </div>
-                </div>
+                <span className="text-gray-500 flex justify-between items-center mr-8">
+                  {partido.fechaCompleta.toLocaleDateString()}{" "}
+                  {partido.fechaCompleta.toLocaleTimeString("es-ES", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  })}
+                </span>
               </div>
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex justify-center items-center mb-4">
                 <div className="flex flex-col items-center">
-                  <span className="text-lg font-bold">Pronóstico</span>
                   <div className="flex items-center mt-2">
                     <input
                       type="number"
@@ -152,13 +191,13 @@ function Partidos() {
                       className="w-16 text-center mx-2 p-2 border rounded-md"
                     />
                   </div>
-                </div>
-                <div className="flex flex-col items-center mx-4">
+
                   <span className="text-lg font-bold">Resultado Real</span>
                   <span className="text-xl font-bold text-gray-800">
                     {realScore}
                   </span>
                 </div>
+
                 <div className="flex flex-col items-center mx-4">
                   <span className="text-lg font-bold">Puntajes Obtenidos</span>
                   <span className="text-xl font-bold text-gray-800">
@@ -170,6 +209,24 @@ function Partidos() {
                     )}
                   </span>
                 </div>
+              </div>
+
+              <div className="mt-2">
+                {matchStatus === "En Vivo" && (
+                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                    En Vivo
+                  </span>
+                )}
+                {matchStatus === "Por Jugar" && (
+                  <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                    Por Jugar
+                  </span>
+                )}
+                {matchStatus === "Finalizado" && (
+                  <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
+                    Finalizado
+                  </span>
+                )}
               </div>
 
               <button

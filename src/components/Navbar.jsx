@@ -24,12 +24,7 @@ function Navbar() {
             >
               Reglas
             </Link>
-            <Link
-              to="/predictions"
-              className="hover:bg-neutral-700 px-3 py-2 rounded transition"
-            >
-              Predicciones
-            </Link>
+
             <Link
               to="/crear-grupo"
               className="hover:bg-neutral-700 px-3 py-2 rounded transition"

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { db } from "../firebase"; // Asegúrate de importar tu configuración de Firebase
+import { db } from "../../firebase"; // Asegúrate de importar tu configuración de Firebase
 import { collection, addDoc, setDoc, doc } from "firebase/firestore";
-import { useAuth } from "../contexts/AuthContext";
-import FasesTorneo from "./FasesTorneo";
-import SeleccionEquipos from "./SeleccionEquipos";
-import ResumenGrupo from "./ResumenGrupo";
-import GrupoCreado from "./GrupoCreado";
+import { useAuth } from "../../contexts/AuthContext";
+import FasesTorneo from "../FasesTorneo";
+import SeleccionEquipos from "../SeleccionEquipos";
+import ResumenGrupo from "../ResumenGrupo";
+import GrupoCreado from "../GrupoCreado";
 
 function CrearGrupo() {
   const { currentUser } = useAuth();

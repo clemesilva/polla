@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/navbar/Navbar";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -9,13 +9,12 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Reglas from "./components/Reglas";
 import Footer from "./components/Footer";
 import ComoFunciona from "./components/ComoFunciona";
-import CrearGrupo from "./components/CrearGrupo";
+import CrearGrupo from "./components/navbar/CrearGrupo";
 import GrupoCreado from "./components/GrupoCreado";
 import MiCuenta from "./components/MiCuenta";
 import { JoinGroup } from "./components/JoinGroup";
-import FootballData from "./components/FootballData";
-import Partidos from "./components/Partidos";
-
+import Partidos from "./components/navbar/Partidos";
+import TablaPosiciones from "./components/navbar/TablaPosiciones";
 function App() {
   return (
     <AuthProvider>
@@ -40,6 +39,15 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/tablaPosiciones"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <TablaPosiciones />{" "}
+                  </ProtectedRoute>
+                }
+              />
 
               <Route
                 path="/crear-grupo"
@@ -49,7 +57,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/football-data" element={<FootballData />} />
 
               <Route path="/mi-cuenta" element={<MiCuenta />} />
               <Route path="/join-group" element={<JoinGroup />} />

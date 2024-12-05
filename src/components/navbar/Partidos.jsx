@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Papa from "papaparse";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 function Partidos() {
   const { currentUser } = useAuth();
@@ -125,7 +125,6 @@ function Partidos() {
       return "Por Jugar";
     }
   };
-
   return (
     <div className="max-w-6xl mx-auto p-6 bg-gradient-to-br from-gray-100 via-white to-gray-50 rounded-lg shadow-xl">
       <h2 className="text-3xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-amber-800 via-amber-700 to-amber-800 text-center">
@@ -144,9 +143,10 @@ function Partidos() {
               className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-shadow flex flex-col"
             >
               <div className="flex justify-between items-center mb-6">
-                <span className="text-gray-600 font-medium text-lg">
+                <span className="text-xl font-bold text-gray-700">
                   {partido.Local} vs {partido.visita}
                 </span>
+
                 <span className="text-gray-500 flex justify-between items-center mr-8">
                   {partido.fechaCompleta.toLocaleDateString()}{" "}
                   {partido.fechaCompleta.toLocaleTimeString("es-ES", {
@@ -156,9 +156,14 @@ function Partidos() {
                   })}
                 </span>
               </div>
-              <div className="flex justify-center items-center mb-4">
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center mt-2">
+              {/* Aqui en adelante son las 3 weas que tengo que ordenar el ordeeennnn */}
+              <div className="flex justify-between items-center mb-6 space-x-8">
+                {/* Pronóstico */}
+                <div className="flex flex-col items-center bg-gradient-to-br from-green-600 to-green-500 p-6 rounded-lg shadow-lg hover:shadow-xl transition">
+                  <span className="text-lg font-bold text-white mb-4 uppercase tracking-wide">
+                    Pronóstico
+                  </span>
+                  <div className="flex items-center">
                     <input
                       type="number"
                       min="0"
@@ -171,9 +176,9 @@ function Partidos() {
                           awayScore
                         )
                       }
-                      className="w-16 text-center mx-2 p-2 border rounded-md"
+                      className="w-20 h-16 text-center mx-2 p-2 text-3xl font-bold text-white bg-green-700 border-2 border-green-400 rounded-lg shadow-inner focus:outline-none focus:ring-4 focus:ring-green-300 transition-all"
                     />
-                    <span className="mx-2 text-xl font-bold text-gray-400">
+                    <span className="mx-2 text-3xl font-bold text-white">
                       -
                     </span>
                     <input
@@ -188,45 +193,61 @@ function Partidos() {
                           e.target.value
                         )
                       }
-                      className="w-16 text-center mx-2 p-2 border rounded-md"
+                      className="w-20 h-16 text-center mx-2 p-2 text-3xl font-bold text-white bg-green-700 border-2 border-green-400 rounded-lg shadow-inner focus:outline-none focus:ring-4 focus:ring-green-300 transition-all"
                     />
                   </div>
-
-                  <span className="text-lg font-bold">Resultado Real</span>
-                  <span className="text-xl font-bold text-gray-800">
-                    {realScore}
-                  </span>
                 </div>
 
-                <div className="flex flex-col items-center mx-4">
-                  <span className="text-lg font-bold">Puntajes Obtenidos</span>
-                  <span className="text-xl font-bold text-gray-800">
-                    {calculateScore(
-                      homeScore,
-                      awayScore,
-                      partido.golesAFavor,
-                      partido.golesEnContra
-                    )}
+                {/* Resultado Real */}
+                <div className="flex flex-col items-center bg-gradient-to-br from-amber-500 to-amber-600 p-6 rounded-lg shadow-lg hover:shadow-xl transition">
+                  <span className="text-lg font-bold text-amber-300 mb-4 uppercase tracking-wide">
+                    Resultado Real
                   </span>
+                  <div className="w-32 h-16 flex items-center justify-center bg-gray-900 border-2 border-gray-600 rounded-lg text-3xl font-bold text-white shadow-inner">
+                    {realScore}
+                  </div>
+                </div>
+
+                {/* Puntajes Obtenidos */}
+                <div className="flex flex-col items-center bg-gradient-to-br from-amber-500 to-amber-600 p-6 rounded-lg shadow-lg hover:shadow-xl transition">
+                  <span className="text-lg font-bold text-amber-300 mb-4 uppercase tracking-wide">
+                    Puntajes Obtenidos
+                  </span>
+                  <div className="w-32 h-16 flex items-center justify-center bg-gray-900 border-2 border-gray-600 rounded-lg text-3xl font-bold text-white shadow-inner">
+                    {matchStatus === "Finalizado" || matchStatus === "En Vivo"
+                      ? calculateScore(
+                          homeScore,
+                          awayScore,
+                          partido.golesAFavor,
+                          partido.golesEnContra
+                        )
+                      : 0}
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-2">
-                {matchStatus === "En Vivo" && (
-                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                    En Vivo
-                  </span>
-                )}
-                {matchStatus === "Por Jugar" && (
-                  <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
-                    Por Jugar
-                  </span>
-                )}
-                {matchStatus === "Finalizado" && (
-                  <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
-                    Finalizado
-                  </span>
-                )}
+              {/* aqui termina la wras que tengo que ordenar */}
+              <div className="flex items-center space-x-4">
+                <span className="text-lg font-bold text-gray-700">
+                  Jornada {partido.jornada}
+                </span>
+                <div>
+                  {matchStatus === "En Vivo" && (
+                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                      En Vivo
+                    </span>
+                  )}
+                  {matchStatus === "Por Jugar" && (
+                    <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                      Por Jugar
+                    </span>
+                  )}
+                  {matchStatus === "Finalizado" && (
+                    <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
+                      Finalizado
+                    </span>
+                  )}
+                </div>
               </div>
 
               <button

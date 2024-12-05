@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 function Navbar() {
   const { currentUser, logout } = useAuth();
@@ -36,6 +36,12 @@ function Navbar() {
               className="hover:bg-neutral-700 px-3 py-2 rounded transition"
             >
               Partidos
+            </Link>
+            <Link
+              to="/tablaPosiciones"
+              className="hover:bg-neutral-700 px-3 py-2 rounded transition"
+            >
+              Tabla
             </Link>
           </div>
           <div className="flex space-x-4">

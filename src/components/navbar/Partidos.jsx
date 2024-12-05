@@ -95,13 +95,14 @@ function Partidos() {
         { merge: true }
       );
 
+      // Mostrar alerta de éxito
+      alert("Predicción guardada con éxito");
       console.log("Predicción y puntaje guardados con éxito", puntosObtenidos);
     } catch (error) {
       console.error("Error al guardar la predicción:", error);
       alert("Error al guardar la predicción");
     }
   };
-
   const handleSavePrediction = (matchId, matchDate) => {
     const homeScore = predictions[matchId]?.homeScore ?? "";
     const awayScore = predictions[matchId]?.awayScore ?? "";
@@ -269,16 +270,32 @@ function Partidos() {
               </div>
 
               <button
-                onClick={() =>
+                onClick={() => {
+                  if (
+                    matchStatus === "En Vivo" ||
+                    matchStatus === "Finalizado"
+                  ) {
+                    alert(
+                      "No se pueden guardar predicciones para partidos En Vivo o Finalizados."
+                    );
+                    return;
+                  }
                   savePrediction(
                     partido.matchID,
                     homeScore,
                     awayScore,
                     partido.fechaCompleta,
-                    partido // Pasar el objeto partido completo
-                  )
-                }
-                className="mt-4 bg-gradient-to-br from-amber-500 to-amber-600 text-white font-bold py-2 px-6 rounded-lg hover:from-amber-600 hover:to-amber-700 shadow-md hover:shadow-lg transition-all duration-300"
+                    partido
+                  );
+                }}
+                className={`mt-4 bg-gradient-to-br from-amber-500 to-amber-600 text-white font-bold py-2 px-6 rounded-lg hover:from-amber-600 hover:to-amber-700 shadow-md hover:shadow-lg transition-all duration-300 ${
+                  matchStatus === "En Vivo" || matchStatus === "Finalizado"
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
+                disabled={
+                  matchStatus === "En Vivo" || matchStatus === "Finalizado"
+                } // Deshabilitar el botón si aplica
               >
                 Guardar Predicción
               </button>

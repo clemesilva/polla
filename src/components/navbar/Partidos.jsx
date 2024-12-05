@@ -57,13 +57,28 @@ function Partidos() {
     fetchUserPredictions();
   }, [currentUser]);
 
-  const savePrediction = async (matchId, homeScore, awayScore, matchDate) => {
+  const savePrediction = async (
+    matchId,
+    homeScore,
+    awayScore,
+    matchDate,
+    partido
+  ) => {
     if (!currentUser) {
       alert("Debes iniciar sesión para guardar predicciones");
       return;
     }
 
     try {
+      // Calcular el puntaje antes de guardar
+      const puntosObtenidos = calculateScore(
+        homeScore,
+        awayScore,
+        partido.golesAFavor,
+        partido.golesEnContra
+      );
+
+      // Guardar predicción junto con el puntaje en Firebase
       const userPredictionsRef = doc(db, "usersPredictions", currentUser.uid);
       await setDoc(
         userPredictionsRef,
@@ -73,12 +88,14 @@ function Partidos() {
               homeScore: parseInt(homeScore),
               awayScore: parseInt(awayScore),
               matchDate,
+              puntajeObtenido: puntosObtenidos, // Guardar el puntaje calculado
             },
           },
         },
         { merge: true }
       );
-      console.log("Predicción guardada con éxito");
+
+      console.log("Predicción y puntaje guardados con éxito", puntosObtenidos);
     } catch (error) {
       console.error("Error al guardar la predicción:", error);
       alert("Error al guardar la predicción");
@@ -111,7 +128,10 @@ function Partidos() {
   const handlePredictionChange = (matchId, homeScore, awayScore) => {
     setPredictions((prev) => ({
       ...prev,
-      [matchId]: { homeScore, awayScore },
+      [matchId]: {
+        homeScore: parseInt(homeScore),
+        awayScore: parseInt(awayScore),
+      },
     }));
   };
 
@@ -209,19 +229,17 @@ function Partidos() {
                 </div>
 
                 {/* Puntajes Obtenidos */}
-                <div className="flex flex-col items-center bg-gradient-to-br from-amber-500 to-amber-600 p-6 rounded-lg shadow-lg hover:shadow-xl transition">
-                  <span className="text-lg font-bold text-amber-300 mb-4 uppercase tracking-wide">
-                    Puntajes Obtenidos
+                <div className="flex flex-col items-center bg-gradient-to-br from-gray-700 to-gray-600 p-6 rounded-lg shadow-lg">
+                  <span className="text-lg font-semibold text-amber-400 mb-4">
+                    Puntaje Obtenido
                   </span>
-                  <div className="w-32 h-16 flex items-center justify-center bg-gray-900 border-2 border-gray-600 rounded-lg text-3xl font-bold text-white shadow-inner">
-                    {matchStatus === "Finalizado" || matchStatus === "En Vivo"
-                      ? calculateScore(
-                          homeScore,
-                          awayScore,
-                          partido.golesAFavor,
-                          partido.golesEnContra
-                        )
-                      : 0}
+                  <div className="w-24 h-12 flex items-center justify-center bg-gray-900 text-2xl font-bold text-white border border-gray-600 rounded-lg">
+                    {calculateScore(
+                      homeScore,
+                      awayScore,
+                      partido.golesAFavor,
+                      partido.golesEnContra
+                    )}
                   </div>
                 </div>
               </div>
@@ -252,9 +270,15 @@ function Partidos() {
 
               <button
                 onClick={() =>
-                  handleSavePrediction(partido.matchID, partido.fechaCompleta)
+                  savePrediction(
+                    partido.matchID,
+                    homeScore,
+                    awayScore,
+                    partido.fechaCompleta,
+                    partido // Pasar el objeto partido completo
+                  )
                 }
-                className="mt-4 bg-[#64c27b] text-white py-2 px-4 rounded-md hover:bg-[#2E7D32] transition-colors"
+                className="mt-4 bg-gradient-to-br from-amber-500 to-amber-600 text-white font-bold py-2 px-6 rounded-lg hover:from-amber-600 hover:to-amber-700 shadow-md hover:shadow-lg transition-all duration-300"
               >
                 Guardar Predicción
               </button>
@@ -278,6 +302,7 @@ const calculateScore = (homeScore, awayScore, realHomeScore, realAwayScore) => {
   ) {
     score += 1; // Puntos por acertar la diferencia de goles
   }
+  console.log(score);
   return score;
 };
 

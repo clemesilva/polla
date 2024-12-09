@@ -33,6 +33,7 @@ export function AuthProvider({ children }) {
           email: user.email,
           createdAt: new Date().toISOString(),
           predictions: {},
+          displayName: user.displayName || "",
         });
       } catch (error) {
         console.error("Error creando usuario:", error);
@@ -96,7 +97,10 @@ export function AuthProvider({ children }) {
   }
 
   function login(email, password) {
-    return signInWithEmailAndPassword(auth, email, password);
+    return signInWithEmailAndPassword(auth, email, password).catch((error) => {
+      console.error("Error al iniciar sesión:", error);
+      throw error;
+    });
   }
 
   function logout() {
@@ -108,6 +112,18 @@ export function AuthProvider({ children }) {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       await createUserDocument(result.user);
+
+      // Inicializar las predicciones del usuario
+      const userPredictionsRef = doc(db, "usersPredictions", result.user.uid);
+      await setDoc(
+        userPredictionsRef,
+        {
+          predictions: {}, // Inicializar con un objeto vacío
+          displayName: result.user.displayName || "", // Agregar displayName
+        },
+        { merge: true }
+      );
+
       return result;
     } catch (error) {
       console.error("Error en autenticación con Google:", error);

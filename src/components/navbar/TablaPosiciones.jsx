@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -6,123 +6,81 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Pagination,
   Spinner,
-  getKeyValue,
 } from "@nextui-org/react";
-import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
-import { useAsyncList } from "@react-stately/data";
 import { db } from "../../firebase"; // Asegúrate de que la ruta sea correcta
-import { doc, getDoc } from "firebase/firestore";
-import { useAuth } from "../../contexts/AuthContext";
+import { collection, getDocs } from "firebase/firestore";
 
-export default function TablaPosiciones() {
-  const { currentUser } = useAuth();
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [hasMore, setHasMore] = React.useState(false);
-  const [tabla, setTabla] = React.useState([]);
+const TablaPosiciones = () => {
+  const [tabla, setTabla] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const list = useAsyncList({
-    async load({ signal, cursor }) {
-      if (cursor) {
-        setIsLoading(false);
-      }
-
-      // Cargar datos de la base de datos
-      if (!currentUser) return { items: [], cursor: null };
-
+  useEffect(() => {
+    const fetchTabla = async () => {
       try {
-        const userPredictionsRef = doc(db, "usersPredictions", currentUser.uid);
-        const userDoc = await getDoc(userPredictionsRef);
+        const usersPredictionsRef = collection(db, "usersPredictions");
+        const snapshot = await getDocs(usersPredictionsRef);
+        const puntosPorUsuario = {};
 
-        if (userDoc.exists()) {
-          const predictions = userDoc.data().predictions || {};
-          const puntosPorUsuario = {};
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const predictions = data.predictions || {};
+          const displayName = data.displayName || "Usuario Anónimo"; // Obtener el displayName
 
-          // Calcular puntos y jornadas
+          // Sumar puntos por cada predicción
           Object.keys(predictions).forEach((matchId) => {
-            const { homeScore, awayScore } = predictions[matchId];
-            const puntos = calculateScore(homeScore, awayScore); // Implementa esta función según tu lógica
-            const jornada = predictions[matchId].jornada || 0;
-
-            if (!puntosPorUsuario[currentUser.uid]) {
-              puntosPorUsuario[currentUser.uid] = { puntos: 0, jornadas: 0 };
+            const { puntajeObtenido } = predictions[matchId];
+            if (!puntosPorUsuario[displayName]) {
+              puntosPorUsuario[displayName] = { puntos: 0 };
             }
-
-            puntosPorUsuario[currentUser.uid].puntos += puntos;
-            puntosPorUsuario[currentUser.uid].jornadas += jornada;
+            puntosPorUsuario[displayName].puntos += puntajeObtenido || 0; // Sumar puntos
           });
+        });
 
-          // Convertir a array y ordenar
-          const tablaArray = Object.entries(puntosPorUsuario).map(
-            ([usuario, data]) => ({
-              usuario,
-              ...data,
-            })
-          );
+        // Convertir a array y ordenar
+        const tablaArray = Object.entries(puntosPorUsuario).map(
+          ([usuario, data]) => ({
+            displayName: usuario, // Cambiar a displayName
+            puntos: data.puntos,
+          })
+        );
 
-          // Ordenar por puntos
-          tablaArray.sort((a, b) => b.puntos - a.puntos);
-          setTabla(tablaArray);
-          setHasMore(false); // Cambia esto si necesitas más paginación
-        }
+        // Ordenar por puntos
+        tablaArray.sort((a, b) => b.puntos - a.puntos);
+        setTabla(tablaArray);
       } catch (error) {
         console.error("Error al obtener la tabla de posiciones:", error);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-      return {
-        items: tabla,
-        cursor: null, // Cambia esto si necesitas más paginación
-      };
-    },
-  });
-
-  const [loaderRef, scrollerRef] = useInfiniteScroll({
-    hasMore,
-    onLoadMore: list.loadMore,
-  });
+    fetchTabla();
+  }, []);
 
   return (
-    <Table
-      isHeaderSticky
-      aria-label="Tabla de Posiciones"
-      baseRef={scrollerRef}
-      bottomContent={
-        hasMore ? (
-          <div className="flex w-full justify-center">
-            <Spinner ref={loaderRef} color="white" />
-          </div>
-        ) : null
-      }
-      classNames={{
-        base: "max-h-[520px] overflow-scroll",
-        table: "min-h-[400px]",
-      }}
-    >
-      <TableHeader>
-        <TableColumn key="position">Posición</TableColumn>
-        <TableColumn key="usuario">Usuario</TableColumn>
-        <TableColumn key="puntos">Puntos</TableColumn>
-      </TableHeader>
-      <TableBody
-        isLoading={isLoading}
-        items={list.items}
-        loadingContent={<Spinner color="white" />}
-      >
-        {(item) => (
-          <TableRow key={item.usuario}>
-            <TableCell>{list.items.indexOf(item) + 1}</TableCell>
-            <TableCell>{item.usuario}</TableCell>
-            <TableCell>{item.puntos}</TableCell>
-            <TableCell>{item.jornadas}</TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <div className="max-w-4xl mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-6">Tabla de Posiciones</h2>
+      {isLoading ? (
+        <Spinner color="white" />
+      ) : (
+        <Table aria-label="Tabla de Posiciones">
+          <TableHeader>
+            <TableColumn key="displayName">Nombre de Usuario</TableColumn>
+            <TableColumn key="puntos">Puntos</TableColumn>
+          </TableHeader>
+          <TableBody>
+            {tabla.map((row) => (
+              <TableRow key={row.displayName}>
+                <TableCell>{row.displayName}</TableCell>
+                <TableCell>{row.puntos}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </div>
   );
-}
-
-const calculateScore = (homeScore, awayScore) => {
-  // Implementa tu lógica para calcular los puntos
-  return 0; // Cambia esto por la lógica real
 };
+
+export default TablaPosiciones;

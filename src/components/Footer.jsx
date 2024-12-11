@@ -7,7 +7,7 @@ function Footer() {
           {/* Columna 1 - Logo y descripción */}
           <div>
             <h3 className="text-xl font-bold mb-4">
-              Primera división de Chilen
+              Primera división de Chilena
             </h3>
             <p className="text-green-100">
               La mejor plataforma para predecir resultados de la Primera

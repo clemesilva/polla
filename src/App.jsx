@@ -20,9 +20,9 @@ function App() {
     <AuthProvider>
       {" "}
       <Router>
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-neutral-600 mt-16">
           <Navbar />
-          <div className="container mx-auto px-4 py-8">
+          <div className="container mx-auto px-4 py-8 ">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />

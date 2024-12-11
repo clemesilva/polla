@@ -7,12 +7,10 @@ function Home() {
   return (
     <div className="max-w-5xl mx-auto text-center px-4 py-8">
       {/* Título principal */}
-      <h1 className="text-4xl font-bold text-green-700 mb-8">
-        Polla futbolera
-      </h1>
+      <h1 className="text-4xl font-bold text-white mb-8">Polla futbolera</h1>
 
       {/* Bienvenida y botones */}
-      <div className="bg-[#f5e1ce] rounded-lg shadow-md p-8 mb-12">
+      <div className="bg-green-100 rounded-lg shadow-md p-8 mb-12 border-white border-8">
         <h2 className="text-2xl font-semibold text-green-700 mb-4">
           ¡Bienvenido a la Quiniela!
         </h2>
@@ -37,7 +35,7 @@ function Home() {
         ) : (
           <Link
             to="/predictions"
-            className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700"
+            className="bg-green-700 text-white px-6 py-2 rounded-md hover:bg-green-900"
           >
             Ver Predicciones
           </Link>
@@ -46,13 +44,13 @@ function Home() {
 
       {/* Tres pasos para participar */}
       <div>
-        <h2 className="text-3xl font-bold text-green-700 mb-6">
+        <h2 className="text-3xl font-bold text-white mb-6">
           ¡Arma tu polla futbolera en solo{" "}
           <span className="text-brown-600">3 pasos</span>!
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Paso 1 */}
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="bg-green-100 p-6 rounded-lg shadow-lg border-white border-8">
             <div className="text-5xl font-bold text-green-600 mb-4">1</div>
             <h3 className="text-2xl font-semibold text-green-700 mb-4">
               Regístrate
@@ -62,7 +60,7 @@ function Home() {
             </p>
           </div>
           {/* Paso 2 */}
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="bg-green-100 p-6 rounded-lg shadow-lg border-white border-8">
             <div className="text-5xl font-bold text-green-600 mb-4">2</div>
             <h3 className="text-2xl font-semibold text-green-700 mb-4">
               Crea tu grupo
@@ -72,7 +70,7 @@ function Home() {
             </p>
           </div>
           {/* Paso 3 */}
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="bg-green-100 p-6 rounded-lg shadow-lg border-white border-8">
             <div className="text-5xl font-bold text-green-600 mb-4">3</div>
             <h3 className="text-2xl font-semibold text-green-700 mb-4">
               Invita a tus amigos

@@ -60,20 +60,26 @@ const TablaPosiciones = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-6">Tabla de Posiciones</h2>
+      <h2 className="text-2xl font-bold mb-6 text-white">
+        Tabla de Posiciones
+      </h2>
       {isLoading ? (
         <Spinner color="white" />
       ) : (
         <Table aria-label="Tabla de Posiciones">
           <TableHeader>
+            <TableColumn key="posicion">Posición</TableColumn>
             <TableColumn key="displayName">Nombre de Usuario</TableColumn>
             <TableColumn key="puntos">Puntos</TableColumn>
           </TableHeader>
           <TableBody>
-            {tabla.map((row) => (
+            {tabla.map((row, index) => (
               <TableRow key={row.displayName}>
-                <TableCell>{row.displayName}</TableCell>
-                <TableCell>{row.puntos}</TableCell>
+                <TableCell key={`posicion-${index}`}>{index + 1}</TableCell>
+                <TableCell key={`displayName-${index}`}>
+                  {row.displayName}
+                </TableCell>
+                <TableCell key={`puntos-${index}`}>{row.puntos}</TableCell>
               </TableRow>
             ))}
           </TableBody>
